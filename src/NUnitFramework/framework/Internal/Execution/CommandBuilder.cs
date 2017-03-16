@@ -115,6 +115,12 @@ namespace NUnit.Framework.Internal.Execution
             foreach (ICommandWrapper decorator in test.Method.GetCustomAttributes<IWrapSetUpTearDown>(true))
                 command = decorator.Wrap(command);
 
+            foreach (var attribute in test.Method.MethodInfo.DeclaringType.GetCustomAttributes(typeof(IWrapSetUpTearDown), true))
+            {
+                var wrapper = (ICommandWrapper)attribute;
+                command = wrapper.Wrap(command);
+            }
+
             // Add command to set up context using attributes that implement IApplyToContext
             IApplyToContext[] changes = test.Method.GetCustomAttributes<IApplyToContext>(true);
             if (changes.Length > 0)
